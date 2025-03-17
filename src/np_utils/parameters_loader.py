@@ -25,9 +25,17 @@ except ImportError:
     pass
 
 try:
-    from neuroplatform import StimParam, StimShape, IntanSofware
+    from neuroplatform import StimParam, StimShape
 except ModuleNotFoundError:
     raise ModuleNotFoundError("Neuroplatform access is required to use this utility.")
+
+try:
+    from neuroplatform import IntanSofware as IntanSoftware
+except ImportError:
+    try:
+        from neuroplatform import IntanSoftware as IntanSoftware
+    except ImportError:
+        raise ImportError("No 'IntanSofware' or 'IntanSoftware'.")
 
 ### ENUMS ###
 
@@ -123,7 +131,7 @@ class StimParamLoader:
 
     Args:
         stimparams (List[StimParam]): List of stimulation parameters. Cannot exceed 16 parameters.
-        intan (IntanSofware, optional): Intan software instance. Defaults to None.
+        intan (IntanSoftware, optional): Intan software instance. Defaults to None.
         verbose (bool, optional): If True, display log messages. Defaults to True.
         must_connect (bool, optional): If True, raise an error if the Intan is not connected. Defaults to False.
 
@@ -176,7 +184,7 @@ class StimParamLoader:
     def __init__(
         self,
         stimparams: List[StimParam] | None,
-        intan: IntanSofware = None,
+        intan: IntanSoftware = None,
         verbose=True,
         must_connect=False,
     ):
@@ -184,7 +192,7 @@ class StimParamLoader:
 
         Args:
             - stimparams (List[StimParam]): List of stimulation parameters. Cannot exceed 16 parameters.
-            - intan (IntanSofware, optional): Intan software instance. Defaults to None.
+            - intan (IntanSoftware, optional): Intan software instance. Defaults to None.
             - verbose (bool, optional): If True, display log messages. Defaults to True.
             - must_connect (bool, optional): If True, raise an error if the Intan is not connected. Defaults to False.
         """
