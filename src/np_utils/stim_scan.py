@@ -14,11 +14,19 @@ from neuroplatform import (
     Database,
     Trigger,
     StimParam,
-    IntanSofware,
     Experiment,
     StimPolarity,
     StimShape,
 )
+
+try:
+    from neuroplatform import IntanSofware as IntanSoftware
+except ImportError:
+    try:
+        from neuroplatform import IntanSoftware as IntanSoftware
+    except ImportError:
+        raise ImportError("No IntanSoftware or IntanSofware")
+
 from .parameters_loader import StimParamLoader
 
 
@@ -282,7 +290,7 @@ class StimScan:
         self.stop_time = None
 
         self._trigger_gen = Trigger()
-        self._intan = IntanSofware()
+        self._intan = IntanSoftware()
         self._db = Database()
 
         self._channels_per_trigger = {}
