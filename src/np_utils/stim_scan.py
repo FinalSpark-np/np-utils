@@ -475,7 +475,6 @@ class StimScan:
         minutes = (total_seconds % 3600) // 60
         seconds = total_seconds % 60
         print(f'Predicted duration of the scan : {int(hours)}h {int(minutes)}m {int(seconds)}s')
-        return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
 
     def _plot_raster_for_channels(
         self,
