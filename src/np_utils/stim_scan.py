@@ -465,6 +465,18 @@ class StimScan:
             self.fs_experiment.stop()
             self.stop_time = datetime.now(UTC)
 
+    def get_scan_duration(self):
+        """Returns the time needed to run the scan with the chosen parameters"""
+        nb_combinations = self.parameter_grid.total_combinations()
+        nb_channels = len(self.scan_channels)
+        time = (nb_combinations * nb_channels * self.repeats_per_channel * self.delay_btw_stim ) + (nb_combinations * nb_channels * self.delay_btw_channels) + (nb_combinations * timedelta(seconds = 20))
+        total_seconds = time.total_seconds()
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
+        print(f'Predicted duration of the scan : {int(hours)}h {int(minutes)}m {int(seconds)}s')
+        return f"{int(hours)}h {int(minutes)}m {int(seconds)}s"
+
     def _plot_raster_for_channels(
         self,
         channel_df,
