@@ -464,17 +464,35 @@ class StimScan:
             self._intan.close()
             self.fs_experiment.stop()
             self.stop_time = datetime.now(UTC)
-
+    
     def get_scan_duration(self):
         """Returns the time needed to run the scan with the chosen parameters"""
         nb_combinations = self.parameter_grid.total_combinations()
         nb_channels = len(self.scan_channels)
-        time = (nb_combinations * nb_channels * self.repeats_per_channel * self.delay_btw_stim ) + (nb_combinations * nb_channels * self.delay_btw_channels) + (nb_combinations * timedelta(seconds = 20))
-        total_seconds = time.total_seconds()
-        hours = total_seconds // 3600
-        minutes = (total_seconds % 3600) // 60
-        seconds = total_seconds % 60
-        print(f'Predicted duration of the scan : {int(hours)}h {int(minutes)}m {int(seconds)}s')
+    
+        stim_time = self.repeats_per_channel * self.delay_btw_stim
+        inter_channel_time = self.delay_btw_channels
+        time_per_combination = nb_channels * (stim_time + inter_channel_time)
+    
+        if self.mea_type == MEAType.MEA4x8:
+            intan_load_time = timedelta(seconds=20)
+            nb_loaders = 1
+        elif self.mea_type == MEAType.MEA32:
+            intan_load_time = timedelta(seconds=40)
+            nb_loaders = 2
+        else:
+            raise ValueError(f"Unsupported MEA type: {self.mea_type}, choose MEAType.MEA4x8 or MEAType.MEA32")
+        
+        cleanup_overhead = timedelta(seconds=10 * nb_loaders)
+    
+        total_time = nb_combinations * (time_per_combination + intan_load_time) + cleanup_overhead
+        total_seconds = int(total_time.total_seconds())
+        h = total_seconds // 3600
+        m = (total_seconds % 3600) // 60
+        s = total_seconds % 60
+    
+        print(f"Predicted duration of the scan : {h}h {m}m {s}s ")
+        return total_time
 
     def _plot_raster_for_channels(
         self,
